@@ -1,0 +1,27 @@
+body{
+  font-size: 18px;
+  line-height: 18px;
+}
+
+.row {
+  vertical-align: top;
+  clear: both;
+}
+
+.cell{
+  float: left;
+  line-height: 1.3em;
+  width: 1em;
+  height: 1em;
+  border: 1px solid black;
+  text-align: center;
+  padding: 2px;
+}
+
+.cell:hover{
+  background-color: #ccc;
+}
+
+.cell:active {
+  background-color: tomato;
+}

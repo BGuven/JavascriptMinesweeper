@@ -1,6 +1,6 @@
 MineSweeper = {
-  NUM_ROWS: 16,
-  NUM_COLS: 30,
+  NUM_ROWS: 25,
+  NUM_COLS: 50,
   NUM_BOMBS: 40,
   DEFAULT_EMPTY_VALUE: "",
   DEFAULT_BOMB_VALUE: "*",
@@ -121,7 +121,6 @@ MineSweeper = {
       });
 
       for (var j = 0; j < this.NUM_COLS; j++) {
-        // $div.html(this.getCell(i,j));
         $div.attr({row: i, col: j});
         $row.append($div.clone());
       };
@@ -135,7 +134,6 @@ MineSweeper = {
       $(this).addClass('marked');
       return false;
     });
-
 
     $(document).on("click", ".cell", function(event) {
       row = $(this).attr('row');
@@ -152,8 +150,16 @@ MineSweeper = {
       return false;
     }
 
-    var selector = "div.cell[row=" + row + "][col=" + col + "]";
-    $cell = $(selector);
+    // var selector = "div.cell[row=" + row + "][col=" + col + "]";
+    // $cell = $(selector);
+
+    // var selector = "div.row:nth-child(" + (row+1) +") div.cell:nth-child(" + (col+1) + ")";
+    // $cell = $(selector);
+
+    var content = document.getElementById('content');
+    var roww = content.children[row];
+    var cell = roww.children[col];
+    var $cell = $(cell);
 
     if ($cell.hasClass('revealed')) {
       return false;

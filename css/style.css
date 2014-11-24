@@ -1,6 +1,14 @@
 body{
   font-size: 18px;
   line-height: 18px;
+
+  /* Disable text selection highlight. */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .row {
@@ -9,6 +17,8 @@ body{
 }
 
 .cell{
+  cursor: pointer;
+
   float: left;
   line-height: 1.3em;
   width: 1em;
@@ -16,6 +26,7 @@ body{
   border: 1px solid black;
   text-align: center;
   padding: 2px;
+  background-color: #ddd;
 }
 
 .cell:hover{
@@ -24,4 +35,12 @@ body{
 
 .cell:active {
   background-color: tomato;
+}
+
+.revealed, .revealed:hover, .reavealed:active {
+  background-color: #888;
+}
+
+.marked, .marked:hover, .marked:active {
+  background-color: blue;
 }

@@ -1,7 +1,7 @@
 MineSweeper = {
-  NUM_ROWS: 20,
-  NUM_COLS: 50,
-  NUM_BOMBS: 49,
+  NUM_ROWS: 16,
+  NUM_COLS: 30,
+  NUM_BOMBS: 40,
   DEFAULT_EMPTY_VALUE: "",
   DEFAULT_BOMB_VALUE: "*",
 
@@ -11,6 +11,9 @@ MineSweeper = {
     this._setupGrid();
     this._setupBombs();
     this._markCells();
+
+    this.setupCellClicks(this);
+
     this._displayGrid();
   },
 
@@ -118,8 +121,8 @@ MineSweeper = {
       });
 
       for (var j = 0; j < this.NUM_COLS; j++) {
-        $div.html(this.getCell(i,j));
-        // $div.html(0);
+        // $div.html(this.getCell(i,j));
+        $div.attr({row: i, col: j});
         $row.append($div.clone());
       };
 
@@ -127,4 +130,51 @@ MineSweeper = {
     }
   },
 
+  setupCellClicks: function(self){
+    $(document).on('contextmenu', ".cell", function(){
+      $(this).addClass('marked');
+      return false;
+    });
+
+
+    $(document).on("click", ".cell", function(event) {
+      row = $(this).attr('row');
+      col = $(this).attr('col');
+      self.clearArea(row, col);
+    });
+  },
+
+  clearArea: function(row, col){
+    row = parseInt(row);
+    col = parseInt(col);
+
+    if (!this._isValidCell(row, col)) {
+      return false;
+    }
+
+    var selector = "div.cell[row=" + row + "][col=" + col + "]";
+    $cell = $(selector);
+
+    if ($cell.hasClass('revealed')) {
+      return false;
+    }
+
+    $cell.html(this.getCell(row, col));
+    $cell.addClass('revealed');
+
+    if (this.getCell(row, col) !== "") {
+      return false;
+    }
+
+    this.clearArea(row-1, col-1);
+    this.clearArea(row  , col-1);
+    this.clearArea(row+1, col-1);
+    this.clearArea(row-1, col  );
+    this.clearArea(row+1, col  );
+    this.clearArea(row-1, col+1);
+    this.clearArea(row  , col+1);
+    this.clearArea(row+1, col+1);
+  },
 }
+
+

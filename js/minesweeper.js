@@ -1,27 +1,27 @@
 MineSweeper = {
-  NUM_ROWS: 25,
-  NUM_COLS: 50,
-  NUM_BOMBS: 40,
+  self: this,
+  NUM_ROWS: 16,
+  NUM_COLS: 30,
+  NUM_BOMBS: 50,
   DEFAULT_EMPTY_VALUE: "",
   DEFAULT_BOMB_VALUE: "*",
+  FLAGS_USED: 0,
 
   grid: [],
 
   init: function(){
     this._setupGrid();
     this._setupBombs();
-    this._markCells();
-
-    this.setupCellClicks(this);
-
+    this._calculateCellValues();
+    this._setupCellClicks(this);
     this._displayGrid();
   },
 
-  getCell: function(row, col){
+  getCellValue: function(row, col){
     return this.grid[row][col];
   },
 
-  setCell: function(row, col, value){
+  setCellValue: function(row, col, value){
     this.grid[row][col] = value;
   },
 
@@ -39,33 +39,33 @@ MineSweeper = {
       cellLocation = this._getRandomCellLocation();
       row = cellLocation[0]
       col = cellLocation[1]
-      if (this.getCell(row, col) !== this.DEFAULT_BOMB_VALUE) {
-        this.setCell(row, col, this.DEFAULT_BOMB_VALUE);
+      if (this.getCellValue(row, col) !== this.DEFAULT_BOMB_VALUE) {
+        this.setCellValue(row, col, this.DEFAULT_BOMB_VALUE);
         bombsInstalledSoFar++;
       }
     }
   },
 
   _getRandomCellLocation: function(){
-    randomRow = this._getRandumIntegerInRange(0, this.NUM_ROWS);
-    randomCol = this._getRandumIntegerInRange(0, this.NUM_COLS);
+    randomRow = this._getRandomIntegerInRange(0, this.NUM_ROWS);
+    randomCol = this._getRandomIntegerInRange(0, this.NUM_COLS);
     return [randomRow, randomCol];
   },
 
-  _getRandumIntegerInRange: function(lowerBound, upperBound) {
+  _getRandomIntegerInRange: function(lowerBound, upperBound) {
     return lowerBound + Math.floor(Math.random() * upperBound);
   },
 
 
-  _markCells: function() {
+  _calculateCellValues: function() {
     for (var i = 0; i < this.NUM_ROWS; i++) {
       for (var j = 0; j < this.NUM_COLS; j++) {
-        cellValue = this.getCell(i, j);
+        cellValue = this.getCellValue(i, j);
 
         if (cellValue !== this.DEFAULT_BOMB_VALUE) {
           numberOfBombsAround = this._getNumberOfSurroundingBombs(i, j);
           if (numberOfBombsAround != 0) {
-            this.setCell(i, j, numberOfBombsAround);
+            this.setCellValue(i, j, numberOfBombsAround);
           }
         }
       }
@@ -75,38 +75,38 @@ MineSweeper = {
   _getNumberOfSurroundingBombs: function(row, col) {
     value = 0;
 
-    (this._isValidCell(row-1, col-1)) ? cellValue = this.getCell(row-1, col-1) : cellValue = -1;
+    (this._isValidCell(row-1, col-1)) ? cellValue = this.getCellValue(row-1, col-1) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row  , col-1)) ? cellValue = this.getCell(row  , col-1) : cellValue = -1;
+    (this._isValidCell(row  , col-1)) ? cellValue = this.getCellValue(row  , col-1) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row+1, col-1)) ? cellValue = this.getCell(row+1, col-1) : cellValue = -1;
+    (this._isValidCell(row+1, col-1)) ? cellValue = this.getCellValue(row+1, col-1) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row-1, col  )) ? cellValue = this.getCell(row-1, col  ) : cellValue = -1;
+    (this._isValidCell(row-1, col  )) ? cellValue = this.getCellValue(row-1, col  ) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row+1, col  )) ? cellValue = this.getCell(row+1, col  ) : cellValue = -1;
+    (this._isValidCell(row+1, col  )) ? cellValue = this.getCellValue(row+1, col  ) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row-1, col+1)) ? cellValue = this.getCell(row-1, col+1) : cellValue = -1;
+    (this._isValidCell(row-1, col+1)) ? cellValue = this.getCellValue(row-1, col+1) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row  , col+1)) ? cellValue = this.getCell(row  , col+1) : cellValue = -1;
+    (this._isValidCell(row  , col+1)) ? cellValue = this.getCellValue(row  , col+1) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
-    (this._isValidCell(row+1, col+1)) ? cellValue = this.getCell(row+1, col+1) : cellValue = -1;
+    (this._isValidCell(row+1, col+1)) ? cellValue = this.getCellValue(row+1, col+1) : cellValue = -1;
     (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
 
     return value;
   },
 
   _isValidCell: function(row, col){
-    return this._isInRange(0, this.NUM_ROWS-1, row) && this._isInRange(0, this.NUM_COLS-1, col);
+    return this._isValueInRange(0, this.NUM_ROWS-1, row) && this._isValueInRange(0, this.NUM_COLS-1, col);
   },
 
-  _isInRange: function(lowerBound, upperBound, value){
+  _isValueInRange: function(lowerBound, upperBound, value){
     return (lowerBound <= value) && (value <= upperBound);
   },
 
@@ -129,32 +129,41 @@ MineSweeper = {
     }
   },
 
-  setupCellClicks: function(self){
-    $(document).on('contextmenu', ".cell", function(){
-      $(this).addClass('marked');
+  _setupCellClicks: function(self){
+    $(document).on('contextmenu', ".cell", function(e){
+      e.preventDefault();
+
+      if ($(this).hasClass('marked')) {
+        $(this).removeClass('marked');
+        self.FLAGS_USED--;
+      } else {
+        $(this).addClass('marked');
+        self.FLAGS_USED++;
+      }
+
+      self._updateFlagsInfo();
+
       return false;
     });
 
-    $(document).on("click", ".cell", function(event) {
+    $(document).on("click", ".cell:not('.marked')", function(event) {
       row = $(this).attr('row');
       col = $(this).attr('col');
-      self.clearArea(row, col);
+      self._clearArea(row, col);
     });
   },
 
-  clearArea: function(row, col){
+  _updateFlagsInfo: function() {
+    $('#bombs-remaining').html(this.NUM_BOMBS - this.FLAGS_USED);
+  },
+
+  _clearArea: function(row, col){
     row = parseInt(row);
     col = parseInt(col);
 
     if (!this._isValidCell(row, col)) {
       return false;
     }
-
-    // var selector = "div.cell[row=" + row + "][col=" + col + "]";
-    // $cell = $(selector);
-
-    // var selector = "div.row:nth-child(" + (row+1) +") div.cell:nth-child(" + (col+1) + ")";
-    // $cell = $(selector);
 
     var content = document.getElementById('content');
     var roww = content.children[row];
@@ -165,22 +174,43 @@ MineSweeper = {
       return false;
     }
 
-    $cell.html(this.getCell(row, col));
+    $cell.html(this.getCellValue(row, col));
     $cell.addClass('revealed');
 
-    if (this.getCell(row, col) !== "") {
+    if (this.getCellValue(row, col) == this.DEFAULT_BOMB_VALUE) {
+      this._displayAllBombs();
+      this._displayGameOverMessage();
+    }
+
+    if (this.getCellValue(row, col) !== this.DEFAULT_EMPTY_VALUE) {
       return false;
     }
 
-    this.clearArea(row-1, col-1);
-    this.clearArea(row  , col-1);
-    this.clearArea(row+1, col-1);
-    this.clearArea(row-1, col  );
-    this.clearArea(row+1, col  );
-    this.clearArea(row-1, col+1);
-    this.clearArea(row  , col+1);
-    this.clearArea(row+1, col+1);
+    this._clearArea(row-1, col-1);
+    this._clearArea(row  , col-1);
+    this._clearArea(row+1, col-1);
+    this._clearArea(row-1, col  );
+    this._clearArea(row+1, col  );
+    this._clearArea(row-1, col+1);
+    this._clearArea(row  , col+1);
+    this._clearArea(row+1, col+1);
+  },
+
+  _displayAllBombs: function(){
+    for (var i = 0; i < this.NUM_ROWS; i++) {
+      for (var j = 0; j < this.NUM_COLS; j++) {
+        if (this.getCellValue(i, j) == this.DEFAULT_BOMB_VALUE) {
+          var content = document.getElementById('content');
+          var roww = content.children[i];
+          var cell = roww.children[j];
+          var $cell = $(cell);
+          $cell.html(this.getCellValue(i, j));
+        }
+      }
+    }
+  },
+
+  _displayGameOverMessage: function() {
+    alert("Game Over");
   },
 }
-
-

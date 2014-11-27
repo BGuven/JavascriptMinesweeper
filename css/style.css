@@ -11,6 +11,7 @@ body{
   user-select: none;
 }
 
+
 .row {
   vertical-align: top;
   clear: both;
@@ -23,7 +24,7 @@ body{
   line-height: 1.3em;
   width: 1em;
   height: 1em;
-  border: 1px solid black;
+  border: 1px dotted black;
   text-align: center;
   padding: 2px;
   background-color: #ddd;

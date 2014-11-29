@@ -11,7 +11,6 @@ MineSweeper = {
   NUM_COLS: 30,
   NUM_BOMBS: 50,
 
-
   DEFAULT_EMPTY_VALUE: "",
   DEFAULT_BOMB_VALUE: "*",
 
@@ -31,7 +30,6 @@ MineSweeper = {
     this._displayGrid();
 
     console.log(this.CLEARED_CELLS, ((this.NUM_ROWS * this.NUM_COLS) - this.NUM_BOMBS), this.NUM_BOMBS);
-
   },
 
   getCellValue: function(row, col){
@@ -42,9 +40,18 @@ MineSweeper = {
     this.grid[row][col] = value;
   },
 
+  _upperLeftCellCoordinates  : function (row, col) {return [row-1, col-1]},
+  _upperCellCoordinates      : function (row, col) {return [row-1, col  ]},
+  _upperRightCellCoordinates : function (row, col) {return [row-1, col+1]},
+  _leftCellCoordinates       : function (row, col) {return [row  , col-1]},
+  _rightCellCoordinates      : function (row, col) {return [row  , col+1]},
+  _lowerLeftCellCoordinates  : function (row, col) {return [row+1, col-1]},
+  _lowerCellCoordinates      : function (row, col) {return [row+1, col  ]},
+  _lowerRightCellCoordinates : function (row, col) {return [row+1, col+1]},
+
   _calculateNumberOfRowsAndCols: function (){
-    var height = $(document).height();
-    var width = $(document).width();
+    var height = $('#grid').height();
+    var width = $('#grid').width();
 
     this.NUM_ROWS = Math.floor(height / this.CELL_HEIGHT);
     this.NUM_COLS = Math.floor(width / this.CELL_WIDTH);
@@ -103,37 +110,27 @@ MineSweeper = {
   },
 
   _getNumberOfSurroundingBombs: function(row, col) {
-    value = 0;
-
-    (this._isValidCell(row-1, col-1)) ? cellValue = this.getCellValue(row-1, col-1) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row  , col-1)) ? cellValue = this.getCellValue(row  , col-1) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row+1, col-1)) ? cellValue = this.getCellValue(row+1, col-1) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row-1, col  )) ? cellValue = this.getCellValue(row-1, col  ) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row+1, col  )) ? cellValue = this.getCellValue(row+1, col  ) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row-1, col+1)) ? cellValue = this.getCellValue(row-1, col+1) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row  , col+1)) ? cellValue = this.getCellValue(row  , col+1) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
-
-    (this._isValidCell(row+1, col+1)) ? cellValue = this.getCellValue(row+1, col+1) : cellValue = -1;
-    (cellValue == -1 || cellValue !== this.DEFAULT_BOMB_VALUE) ? value : value++;
+    var value = this._getCellValueIfValidCell( this._upperLeftCellCoordinates  (row, col) )
+              + this._getCellValueIfValidCell( this._upperCellCoordinates      (row, col) )
+              + this._getCellValueIfValidCell( this._upperRightCellCoordinates (row, col) )
+              + this._getCellValueIfValidCell( this._leftCellCoordinates       (row, col) )
+              + this._getCellValueIfValidCell( this._rightCellCoordinates      (row, col) )
+              + this._getCellValueIfValidCell( this._lowerLeftCellCoordinates  (row, col) )
+              + this._getCellValueIfValidCell( this._lowerCellCoordinates      (row, col) )
+              + this._getCellValueIfValidCell( this._lowerRightCellCoordinates (row, col) );
 
     return value;
   },
 
+  _getCellValueIfValidCell: function(cellCoordinates) {
+    var [row, col] = cellCoordinates;
+
+    return (this._isValidCell(row, col)
+            && (this.getCellValue(row, col) === this.DEFAULT_BOMB_VALUE) ) ? 1 : 0;
+  },
+
   _isValidCell: function(row, col){
-    return this._isValueInRange(0, this.NUM_ROWS-1, row) && this._isValueInRange(0, this.NUM_COLS-1, col);
+    return (this._isValueInRange(0, this.NUM_ROWS-1, row) && this._isValueInRange(0, this.NUM_COLS-1, col));
   },
 
   _isValueInRange: function(lowerBound, upperBound, value){
@@ -160,7 +157,7 @@ MineSweeper = {
         $row.append($div.clone());
       };
 
-      $('#content').append($row);
+      $('#grid').append($row);
     }
   },
 
@@ -182,9 +179,9 @@ MineSweeper = {
     });
 
     $(document).on("click", ".cell:not('.marked')", function(event) {
-      row = $(this).attr('row');
-      col = $(this).attr('col');
-      self._clearArea(row, col);
+      var row = parseInt($(this).attr('row'));
+      var col = parseInt($(this).attr('col'));
+      self._clearArea([row, col]);
     });
   },
 
@@ -192,15 +189,14 @@ MineSweeper = {
     $('#bombs-remaining').html(this.NUM_BOMBS - this.FLAGS_USED);
   },
 
-  _clearArea: function(row, col){
-    row = parseInt(row);
-    col = parseInt(col);
+  _clearArea: function(cellCoordinates){
+    var [row, col] = cellCoordinates;
 
     if (!this._isValidCell(row, col)) {
       return false;
     }
 
-    var content = document.getElementById('content');
+    var content = document.getElementById('grid');
     var roww = content.children[row];
     var cell = roww.children[col];
     var $cell = $(cell);
@@ -228,15 +224,14 @@ MineSweeper = {
       return false;
     }
 
-
-    this._clearArea(row-1, col-1);
-    this._clearArea(row  , col-1);
-    this._clearArea(row+1, col-1);
-    this._clearArea(row-1, col  );
-    this._clearArea(row+1, col  );
-    this._clearArea(row-1, col+1);
-    this._clearArea(row  , col+1);
-    this._clearArea(row+1, col+1);
+    this._clearArea( this._upperLeftCellCoordinates  (row, col) );
+    this._clearArea( this._upperCellCoordinates      (row, col) );
+    this._clearArea( this._upperRightCellCoordinates (row, col) );
+    this._clearArea( this._leftCellCoordinates       (row, col) );
+    this._clearArea( this._rightCellCoordinates      (row, col) );
+    this._clearArea( this._lowerLeftCellCoordinates  (row, col) );
+    this._clearArea( this._lowerCellCoordinates      (row, col) );
+    this._clearArea( this._lowerRightCellCoordinates (row, col) );
   },
 
   wonGame: function (){
@@ -247,7 +242,7 @@ MineSweeper = {
     for (var i = 0; i < this.NUM_ROWS; i++) {
       for (var j = 0; j < this.NUM_COLS; j++) {
         if (this.getCellValue(i, j) == this.DEFAULT_BOMB_VALUE) {
-          var content = document.getElementById('content');
+          var content = document.getElementById('grid');
           var roww = content.children[i];
           var cell = roww.children[j];
           var $cell = $(cell);

@@ -1,6 +1,12 @@
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
 body{
-  font-size: 18px;
-  line-height: 18px;
+  /*font-size: 18px;*/
+  /*line-height: 18px;*/
 
   /* Disable text selection highlight. */
   -webkit-touch-callout: none;
@@ -21,12 +27,12 @@ body{
   cursor: pointer;
 
   float: left;
-  line-height: 1.3em;
-  width: 1em;
-  height: 1em;
+  /*line-height: 1.3em;*/
+  /*width: 1em;*/
+  /*height: 1em;*/
   border: 1px dotted black;
   text-align: center;
-  padding: 2px;
+  /*padding: 2px;*/
   background-color: #ddd;
 }
 

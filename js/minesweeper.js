@@ -1,20 +1,37 @@
 MineSweeper = {
   self: this,
+  FULLSCREEN: true,
+
+  CELL_WIDTH: "20",
+  CELL_HEIGHT: "20",
+
+  CELL_BOMB_RATIO: 100,
+
   NUM_ROWS: 16,
   NUM_COLS: 30,
   NUM_BOMBS: 50,
+
+
   DEFAULT_EMPTY_VALUE: "",
   DEFAULT_BOMB_VALUE: "*",
+
+
   FLAGS_USED: 0,
+  CLEARED_CELLS: 0,
 
   grid: [],
 
   init: function(){
+    this._calculateNumberOfRowsAndCols();
+    this._calculateNumberOfBombs();
     this._setupGrid();
     this._setupBombs();
     this._calculateCellValues();
     this._setupCellClicks(this);
     this._displayGrid();
+
+    console.log(this.CLEARED_CELLS, ((this.NUM_ROWS * this.NUM_COLS) - this.NUM_BOMBS), this.NUM_BOMBS);
+
   },
 
   getCellValue: function(row, col){
@@ -23,6 +40,19 @@ MineSweeper = {
 
   setCellValue: function(row, col, value){
     this.grid[row][col] = value;
+  },
+
+  _calculateNumberOfRowsAndCols: function (){
+    var height = $(document).height();
+    var width = $(document).width();
+
+    this.NUM_ROWS = Math.floor(height / this.CELL_HEIGHT);
+    this.NUM_COLS = Math.floor(width / this.CELL_WIDTH);
+    console.log('Rows:', this.NUM_ROWS, 'Cols:', this.NUM_COLS);
+  },
+
+  _calculateNumberOfBombs: function(){
+    this.NUM_BOMBS = Math.floor((this.NUM_ROWS * this.NUM_COLS) / this.CELL_BOMB_RATIO);
   },
 
   _setupGrid: function(){
@@ -115,6 +145,11 @@ MineSweeper = {
       "class": "cell"
     });
 
+    $div.css({
+      width: this.CELL_WIDTH + "px",
+      height: this.CELL_HEIGHT + "px",
+    });
+
     for (var i = 0; i < this.NUM_ROWS; i++) {
       var $row = $('<div />', {
         "class": "row"
@@ -174,17 +209,25 @@ MineSweeper = {
       return false;
     }
 
-    $cell.html(this.getCellValue(row, col));
-    $cell.addClass('revealed');
-
     if (this.getCellValue(row, col) == this.DEFAULT_BOMB_VALUE) {
       this._displayAllBombs();
       this._displayGameOverMessage();
     }
 
+    $cell.html(this.getCellValue(row, col));
+    $cell.addClass('revealed');
+
+
+    this.CLEARED_CELLS++;
+
+    if(this.wonGame()){
+      alert("You cleared all the mines. Congrats!!");
+    }
+
     if (this.getCellValue(row, col) !== this.DEFAULT_EMPTY_VALUE) {
       return false;
     }
+
 
     this._clearArea(row-1, col-1);
     this._clearArea(row  , col-1);
@@ -194,6 +237,10 @@ MineSweeper = {
     this._clearArea(row-1, col+1);
     this._clearArea(row  , col+1);
     this._clearArea(row+1, col+1);
+  },
+
+  wonGame: function (){
+    return (this.CLEARED_CELLS === ((this.NUM_ROWS * this.NUM_COLS) - this.NUM_BOMBS));
   },
 
   _displayAllBombs: function(){

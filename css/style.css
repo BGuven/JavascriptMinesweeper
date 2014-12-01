@@ -28,11 +28,28 @@ body{
 }
 
 #nav {
-  height: 10%;
+  height: 60px;
+  line-height: 60px;
 }
 
+.controls {
+  float: left;
+  margin: 0 10px;
+}
+
+#restart-button:hover {
+  cursor: pointer;
+  color: red;
+}
+
+#bomb-status {
+  float: right;
+  margin-right: 10px;
+}
+
+
 #grid {
-  height: 90%;
+  height: calc(100% - 60px);
 }
 
 .row {
@@ -66,4 +83,12 @@ body{
 
 .marked, .marked:hover, .marked:active {
   background-color: blue;
+}
+
+.bomb-exploded {
+  background-color: red;
+}
+
+.shortTermSolution {
+  background-color: yellow;
 }

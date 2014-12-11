@@ -145,7 +145,9 @@ var MineSweeper = (function(){
     },
 
     _getCellValueIfValidCell: function(cellCoordinates) {
-      var [row, col] = cellCoordinates;
+      // var [row, col] = cellCoordinates;
+      var row = cellCoordinates[0],
+          col = cellCoordinates[1];
 
       return this._isValidCell(row, col) &&
       (this.getCellValue(row, col) === this.DEFAULT_BOMB_VALUE)
@@ -168,6 +170,7 @@ var MineSweeper = (function(){
       $div.css({
         width: this.CELL_WIDTH + "px",
         height: this.CELL_HEIGHT + "px",
+        "line-height": this.CELL_HEIGHT + "px",
       });
 
       for (var i = 0; i < this.NUM_ROWS; i++) {
@@ -211,13 +214,13 @@ var MineSweeper = (function(){
         var row = parseInt($(this).attr('row'));
         var col = parseInt($(this).attr('col'));
         self._highlightNearbyCells(row, col);
+
+        $(document).on("mouseup", function(event) {
+          self._removeHighlightNearbyCells(row, col);
+        });
       });
 
-      $("#grid").on("mouseup", ".cell.revealed", function(event) {
-        var row = parseInt($(this).attr('row'));
-        var col = parseInt($(this).attr('col'));
-        self._removeHighlightNearbyCells(row, col);
-      });
+
     },
 
     _highlightNearbyCells: function(row, col){
@@ -232,12 +235,18 @@ var MineSweeper = (function(){
     },
 
     _highlightCell: function(cellCoordinates){
-      var [row, col] = cellCoordinates;
+      // var [row, col] = cellCoordinates;
+      var row = cellCoordinates[0],
+          col = cellCoordinates[1];
+
       var content = document.getElementById('grid');
       var roww = content.children[row];
       var cell = roww.children[col];
       var $cell = $(cell);
-      $cell.addClass('shortTermSolution');
+
+      if (!$cell.hasClass('revealed') && !$cell.hasClass('marked')) {
+        $cell.addClass('shortTermSolution');
+      }
     },
 
     _removeHighlightNearbyCells: function(row, col){
@@ -252,7 +261,10 @@ var MineSweeper = (function(){
     },
 
     _removeHighlightCell: function(cellCoordinates){
-      var [row, col] = cellCoordinates;
+      // var [row, col] = cellCoordinates;
+      var row = cellCoordinates[0],
+          col = cellCoordinates[1];
+
       var content = document.getElementById('grid');
       var roww = content.children[row];
       var cell = roww.children[col];
@@ -265,7 +277,10 @@ var MineSweeper = (function(){
     },
 
     _clearArea: function(cellCoordinates){
-      var [row, col] = cellCoordinates;
+      // var [row, col] = cellCoordinates;
+      var row = cellCoordinates[0],
+          col = cellCoordinates[1];
+
 
       if (!this._isValidCell(row, col)) {
         return false;
@@ -336,6 +351,8 @@ var MineSweeper = (function(){
     cleanUpEvents: function() {
       $("#grid").off('contextmenu');
       $("#grid").off("click");
+      $("#grid").off("mousedown");
+      $(document).off("mouseup");
     },
 
     cleanUpDom: function(){

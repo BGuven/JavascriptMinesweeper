@@ -1,3 +1,13 @@
+/*
+  #95A5A6 :unrevealed
+  #6C7A89 :revealed
+  #BFBFBF :highlighted
+
+  #CF000F :marked
+  #F22613 :bombExploded
+*/
+
+
 * {
   box-sizing: border-box;
   padding: 0;
@@ -30,6 +40,10 @@ body{
 #nav {
   height: 60px;
   line-height: 60px;
+  background-color: #1A191F;
+  background-color: #2C3E50;
+  font-weight: bold;
+  color: #ccc;
 }
 
 .controls {
@@ -53,42 +67,36 @@ body{
 }
 
 .row {
-  vertical-align: top;
+  /*vertical-align: top;*/
   clear: both;
 }
 
 .cell{
   cursor: pointer;
   float: left;
-  /*line-height: 1.3em;*/
-  /*width: 1em;*/
-  /*height: 1em;*/
   border: 1px dotted black;
   text-align: center;
-  /*padding: 2px;*/
-  background-color: #ddd;
+  background-color: #6C7A89;
+  font-size: 20px;
 }
 
 .cell:hover{
   background-color: #ccc;
 }
 
-.cell:active {
-  background-color: tomato;
-}
-
 .revealed, .revealed:hover, .reavealed:active {
-  background-color: #888;
+  background-color: #95A5A6;
+  background-color: #B1C4C5;
 }
 
 .marked, .marked:hover, .marked:active {
-  background-color: blue;
+  background-color: #CF000F;
 }
 
 .bomb-exploded {
-  background-color: red;
+  background-color: #C0392B;
 }
 
 .shortTermSolution {
-  background-color: yellow;
+  background-color: #BFBFBF;
 }

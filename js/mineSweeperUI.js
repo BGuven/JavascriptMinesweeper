@@ -2,10 +2,12 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
   "use strict"
 
   return {
+    $grid: $('#grid'),
+
     FLAGS_USED: 0,
     CLEARED_CELLS: 0,
 
-    FULLSCREEN: true,
+    FULLSCREEN: !true,
 
     CELL_CSS_PROPERTIES: {
       "width": "20",
@@ -16,37 +18,40 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
     CELL_HEIGHT: "20",
 
     init: function(){
+      this._setupRestartButton();
+      this.createGame();
+    },
+
+    _setupRestartButton: function(){
       (function(self){
         $("#restart-button").click(function(){
           console.log('restarting game');
           self.restartGame();
         });
       }(this));
-
-      this._createGame();
     },
 
-    _createGame: function(){
+    createGame: function(){
       this.CLEARED_CELLS = 0;
       this.FLAGS_USED = 0;
       this._calculateNumberOfRowsAndCols();
-      this._calculateNumberOfBombs();
+      this._calculateNumberOfBombs(); // Can be moved up..
       this.setupGrid();
       this.setupBombs();
       this._calculateCellValues();
       this._setupCellClicks(this);
       this._displayGrid();
       this._updateFlagsInfo();
-      console.log(this.CLEARED_CELLS, ((this.NUM_ROWS * this.NUM_COLS) - this.NUM_BOMBS), this.NUM_BOMBS);
     },
 
     _calculateNumberOfRowsAndCols: function (){
-      var height = $('#grid').height();
-      var width = $('#grid').width();
+      if (this.FULLSCREEN) {
+        var height = this.$grid.height(),
+            width = this.$grid.width();
 
-      this.NUM_ROWS = Math.floor(height / this.CELL_HEIGHT);
-      this.NUM_COLS = Math.floor(width / this.CELL_WIDTH);
-      console.log('Rows:', this.NUM_ROWS, 'Cols:', this.NUM_COLS);
+        this.NUM_ROWS = Math.floor(height / this.CELL_HEIGHT);
+        this.NUM_COLS = Math.floor(width / this.CELL_WIDTH);
+      }
     },
 
     _displayGrid: function(){
@@ -70,12 +75,12 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
           $row.append($div.clone());
         };
 
-        $('#grid').append($row);
+        this.$grid.append($row);
       }
     },
 
     _setupCellClicks: function(self){
-      $("#grid").on('contextmenu', ".cell", function(e){
+      this.$grid.on('contextmenu', ".cell", function(e){
         e.preventDefault();
 
         if ($(this).hasClass('revealed')) {
@@ -95,15 +100,17 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
         return false;
       });
 
-      $("#grid").on("click", ".cell:not('.marked')", function(event) {
+      this.$grid.on("click", ".cell:not('.marked')", function(event) {
         var row = parseInt($(this).attr('row')),
             col = parseInt($(this).attr('col'));
+
         self.clearArea([row, col]);
       });
 
-      $("#grid").on("mousedown", ".cell.revealed", function(event) {
+      this.$grid.on("mousedown", ".cell.revealed", function(event) {
         var row = parseInt($(this).attr('row')),
             col = parseInt($(this).attr('col'));
+
         self._highlightNearbyCells(row, col);
 
         $(document).on("mouseup", function(event) {
@@ -184,24 +191,24 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
 
     _displayGameOverMessage: function() {
       this.cleanUpEvents();
-      alert("Game Over");
+      console.log("Game Over");
     },
 
     cleanUpEvents: function() {
-      $("#grid").off('contextmenu');
-      $("#grid").off("click");
-      $("#grid").off("mousedown");
+      this.$grid.off('contextmenu');
+      this.$grid.off("click");
+      this.$grid.off("mousedown");
       $(document).off("mouseup");
     },
 
     cleanUpDom: function(){
-      $('#grid').empty();
+      this.$grid.empty();
     },
 
     restartGame: function(){
       this.cleanUpEvents();
       this.cleanUpDom();
-      this._createGame();
+      this.createGame();
     },
 
     clearArea: function(cellCoordinates){
@@ -233,7 +240,7 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
       this.CLEARED_CELLS++;
 
       if(this.wonGame()){
-        alert("You cleared all the mines. Congrats!!");
+        console.log("You cleared all the mines. Congrats!!");
       }
 
       if (this.getCellValue(row, col) !== this.DEFAULT_EMPTY_VALUE) {

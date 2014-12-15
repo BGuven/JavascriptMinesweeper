@@ -2,7 +2,7 @@ var MineSweeper = (function(){
   "use strict"
 
   return {
-    CELL_BOMB_RATIO: 100,
+    CELL_BOMB_RATIO: 10,
     NUM_ROWS: 16,
     NUM_COLS: 30,
     NUM_BOMBS: 50,
@@ -110,5 +110,4 @@ var MineSweeper = (function(){
       return (lowerBound <= value) && (value <= upperBound);
     }
   };
-
 }());

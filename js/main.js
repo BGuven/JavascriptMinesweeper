@@ -1,1 +1,1 @@
-MineSweeper.init();
+MineSweeperUI.init();

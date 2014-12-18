@@ -2,16 +2,18 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
   "use strict"
 
   return {
+    grid: document.getElementById('grid'),
     $grid: $('#grid'),
 
     FLAGS_USED: 0,
     CLEARED_CELLS: 0,
 
-    FULLSCREEN: !true,
+    FULLSCREEN: !!true,
 
     CELL_CSS_PROPERTIES: {
-      "width": "20",
-      "height": "20",
+      "width": "20px",
+      "height": "20px",
+      "line-height": "20px"
     },
 
     CELL_WIDTH: "20",
@@ -59,11 +61,7 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
         "class": "cell"
       });
 
-      $div.css({
-        width: this.CELL_WIDTH + "px",
-        height: this.CELL_HEIGHT + "px",
-        "line-height": this.CELL_HEIGHT + "px",
-      });
+      $div.css(this.CELL_CSS_PROPERTIES);
 
       for (var i = 0; i < this.NUM_ROWS; i++) {
         var $row = $('<div />', {
@@ -134,13 +132,14 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
       var row = cellCoordinates[0],
           col = cellCoordinates[1];
 
-      var content = document.getElementById('grid');
-      var roww = content.children[row];
-      var cell = roww.children[col];
-      var $cell = $(cell);
+      if (!this._isValidCell(row, col)) {
+        return false;
+      }
+
+      var $cell = this.findCell(row, col);
 
       if (!$cell.hasClass('revealed') && !$cell.hasClass('marked')) {
-        $cell.addClass('shortTermSolution');
+        $cell.addClass('highlight');
       }
     },
 
@@ -159,11 +158,12 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
       var row = cellCoordinates[0],
           col = cellCoordinates[1];
 
-      var content = document.getElementById('grid');
-      var roww = content.children[row];
-      var cell = roww.children[col];
-      var $cell = $(cell);
-      $cell.removeClass('shortTermSolution');
+      if (!this._isValidCell(row, col)) {
+        return false;
+      }
+
+      var $cell = this.findCell(row, col);
+      $cell.removeClass('highlight');
     },
 
     _updateFlagsInfo: function() {
@@ -178,10 +178,7 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
       for (var i = 0; i < this.NUM_ROWS; i++) {
         for (var j = 0; j < this.NUM_COLS; j++) {
           if (this.getCellValue(i, j) == this.DEFAULT_BOMB_VALUE) {
-            var content = document.getElementById('grid');
-            var roww = content.children[i];
-            var cell = roww.children[j];
-            var $cell = $(cell);
+            var $cell = this.findCell(i, j);
             $cell.html(this.getCellValue(i, j));
             $cell.addClass('bomb-exploded');
           }
@@ -211,6 +208,13 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
       this.createGame();
     },
 
+    findCell: function(row, col){
+      var cell = self.grid.children[row].children[col]
+      var $cell = $(cell);
+
+      return $cell;
+    },
+
     clearArea: function(cellCoordinates){
       var row = cellCoordinates[0],
           col = cellCoordinates[1];
@@ -219,10 +223,7 @@ var MineSweeperUI = $.extend(MineSweeper, (function(){
         return false;
       }
 
-      var content = document.getElementById('grid');
-      var roww = content.children[row];
-      var cell = roww.children[col];
-      var $cell = $(cell);
+      var $cell = this.findCell(row, col);
 
       if ($cell.hasClass('revealed')) {
         return false;
